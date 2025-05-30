@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boas-vindas</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container2">
+        <h1 id="welcome"></h1>
+        <p id="token-info"></p>
+        <button onclick="logout()" class="btn">Sair</button>
+    </div>
+
+    <script>
+        const email = localStorage.getItem('email');
+        const expiracao = localStorage.getItem('expiracao');
+
+        if (!email || !expiracao) {
+            window.location.href = '/index.html';
+        }
+
+        document.getElementById('welcome').innerText = `Seja bem-vindo(a), ${email}!`;
+        document.getElementById('token-info').innerText = `Seu token expira em ${expiracao}`;
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = '/index.html';
+        }
+    </script>
+</body>
+</html>
