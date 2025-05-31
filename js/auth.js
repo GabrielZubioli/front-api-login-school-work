@@ -17,11 +17,12 @@ async function loginUsuario() {
     if (response.ok) {
       const data = await response.json();
       localStorage.setItem("email", email);
-      localStorage.setItem("expiracao", data.expiration);
+      localStorage.setItem("expiracao", data.dataExpiracao);
+      const dataFormatada = formatarData(data.dataExpiracao);
       alert(
-        `Seja bem-vindo(a), ${email}! Seu token expira em ${data.expiration}`
+        `Seja bem-vindo(a), ${email}! Seu token expira em ${dataFormatada}`
       );
-      window.location.href = "../welcome.html"; // Ajuste o caminho se precisar
+      window.location.href = "/welcome.html";
     } else {
       const errorMessage = await response.text();
       alert(`Erro: ${errorMessage}`);
@@ -59,6 +60,18 @@ async function cadastrarUsuario() {
     alert("Erro de conexão com o servidor.");
   }
 }
+
+function formatarData(dataISO) {
+  const data = new Date(dataISO);
+  const dia = String(data.getDate()).padStart(2, "0");
+  const mes = String(data.getMonth() + 1).padStart(2, "0"); // mês começa do 0
+  const ano = data.getFullYear();
+  const horas = String(data.getHours()).padStart(2, "0");
+  const minutos = String(data.getMinutes()).padStart(2, "0");
+
+  return `${dia}/${mes}/${ano} ${horas}:${minutos}`;
+}
+  
 
 document.getElementById("loginForm").addEventListener("submit", (e) => {
   e.preventDefault();

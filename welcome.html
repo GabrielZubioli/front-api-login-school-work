@@ -1,33 +1,52 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Boas-vindas</title>
-    <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
     <div class="container2">
-        <h1 id="welcome"></h1>
-        <p id="token-info"></p>
-        <button onclick="logout()" class="btn">Sair</button>
+      <h1 id="welcome"></h1>
+      <p id="token-info"></p>
+      <button onclick="logout()" class="btn">Sair</button>
     </div>
 
     <script>
-        const email = localStorage.getItem('email');
-        const expiracao = localStorage.getItem('expiracao');
+      const expiracaoISO = localStorage.getItem("expiracao");
 
-        if (!email || !expiracao) {
-            window.location.href = '/index.html';
-        }
+      function formatarData(dataISO) {
+        const data = new Date(dataISO);
+        const dia = String(data.getDate()).padStart(2, "0");
+        const mes = String(data.getMonth() + 1).padStart(2, "0");
+        const ano = data.getFullYear();
+        const horas = String(data.getHours()).padStart(2, "0");
+        const minutos = String(data.getMinutes()).padStart(2, "0");
 
-        document.getElementById('welcome').innerText = `Seja bem-vindo(a), ${email}!`;
-        document.getElementById('token-info').innerText = `Seu token expira em ${expiracao}`;
+        return `${dia}/${mes}/${ano} ${horas}:${minutos}`;
+      }
 
-        function logout() {
-            localStorage.clear();
-            window.location.href = '/index.html';
-        }
+      document.getElementById(
+        "token-info"
+      ).innerText = `Seu token expira em ${formatarData(expiracaoISO)}`;
+
+      const email = localStorage.getItem("email");
+      if (!email || !expiracao) {
+        window.location.href = "/index.html";
+      }
+
+      document.getElementById(
+        "welcome"
+      ).innerText = `Seja bem-vindo(a), ${email}!`;
+      document.getElementById(
+        "token-info"
+      ).innerText = `Seu token expira em ${formatarData(expiracaoISO)}`;
+
+      function logout() {
+        localStorage.clear();
+        window.location.href = "/index.html";
+      }
     </script>
-</body>
+  </body>
 </html>
