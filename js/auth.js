@@ -22,7 +22,7 @@ async function loginUsuario() {
       alert(
         `Seja bem-vindo(a), ${email}! Seu token expira em ${dataFormatada}`
       );
-      window.location.href = "https://gabrielzubioli.github.io/login-screen-school-work/welcome.html";
+      window.location.href = "/welcome.html";
     } else {
       const errorMessage = await response.text();
       alert(`Erro: ${errorMessage}`);
