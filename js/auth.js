@@ -6,6 +6,17 @@ function senhaEhForte(senha) {
   return regexSenhaForte.test(senha);
 }
 
+function formatarData(dataISO) {
+  const data = new Date(dataISO);
+  const dia = String(data.getDate()).padStart(2, "0");
+  const mes = String(data.getMonth() + 1).padStart(2, "0");
+  const ano = data.getFullYear();
+  const horas = String(data.getHours()).padStart(2, "0");
+  const minutos = String(data.getMinutes()).padStart(2, "0");
+
+  return `${dia}/${mes}/${ano} ${horas}:${minutos}`;
+}
+
 async function loginUsuario() {
   const email = document.getElementById("loginEmail").value.trim();
   const senha = document.getElementById("loginPassword").value.trim();
@@ -19,16 +30,21 @@ async function loginUsuario() {
       body: JSON.stringify(body),
     });
 
+    const responseText = await response.text();
+    let responseData;
+    
+    try {
+      responseData = JSON.parse(responseText);
+    } catch {
+      responseData = null;
+    }
+
     if (response.ok) {
-      const data = await response.json();
       localStorage.setItem("email", email);
-      localStorage.setItem("expiracao", data.dataExpiracao);
+      localStorage.setItem("expiracao", formatarData(responseData?.dataExpiracao));
       redirecionarParaWelcome();
     } else {
-      const errorData = await response.json().catch(() => null);
-      const errorMessage =
-        errorData?.mensagem || "Erro ao realizar login. Verifique seus dados.";
-      alert(`Erro: ${errorMessage}`);
+      alert(`Erro: ${responseData?.mensagem || responseText || "Erro ao realizar login."}`);
     }
   } catch (error) {
     console.error(error);
@@ -39,9 +55,7 @@ async function loginUsuario() {
 async function cadastrarUsuario() {
   const email = document.getElementById("registerEmail").value.trim();
   const senha = document.getElementById("registerPassword").value.trim();
-  const senhaConfirmada = document
-    .getElementById("senhaConfirmada")
-    .value.trim();
+  const senhaConfirmada = document.getElementById("senhaConfirmada").value.trim();
 
   if (!email || !senha || !senhaConfirmada) {
     alert("Preencha todos os campos.");
@@ -69,17 +83,20 @@ async function cadastrarUsuario() {
       body: JSON.stringify(body),
     });
 
-    if (response.ok) {
-      const container = document.querySelector(".container");
-      alert("Usuário cadastrado com sucesso!");
+    const responseText = await response.text();
+    let responseData;
+    
+    try {
+      responseData = JSON.parse(responseText);
+    } catch {
+      responseData = null;
+    }
 
-      container.classList.remove("active");
+    if (response.ok) {
+      alert("Usuário cadastrado com sucesso!");
+      document.querySelector(".container").classList.remove("active");
     } else {
-      const errorData = await response.json().catch(() => null);
-      const errorMessage =
-        errorData?.mensagem ||
-        "Erro ao cadastrar. Verifique se o email já está cadastrado ou se os dados estão corretos.";
-      alert(`Erro: ${errorMessage}`);
+      alert(`Erro: ${responseData?.mensagem || responseText || "Erro ao cadastrar usuário."}`);
     }
   } catch (error) {
     console.error(error);
@@ -96,17 +113,6 @@ function redirecionarParaWelcome() {
     window.location.href =
       "https://gabrielzubioli.github.io/login-screen-school-work/welcome";
   }
-}
-
-function formatarData(dataISO) {
-  const data = new Date(dataISO);
-  const dia = String(data.getDate()).padStart(2, "0");
-  const mes = String(data.getMonth() + 1).padStart(2, "0");
-  const ano = data.getFullYear();
-  const horas = String(data.getHours()).padStart(2, "0");
-  const minutos = String(data.getMinutes()).padStart(2, "0");
-
-  return `${dia}/${mes}/${ano} ${horas}:${minutos}`;
 }
 
 document.getElementById("loginForm").addEventListener("submit", (e) => {
