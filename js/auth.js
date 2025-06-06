@@ -22,7 +22,7 @@ async function loginUsuario() {
       alert(
         `Seja bem-vindo(a), ${email}! Seu token expira em ${dataFormatada}`
       );
-      window.location.href = "/login-screen-school-work/welcome.html";
+      redirecionarParaWelcome();
     } else {
       const errorMessage = await response.text();
       alert(`Erro: ${errorMessage}`);
@@ -58,6 +58,17 @@ async function cadastrarUsuario() {
   } catch (error) {
     console.error(error);
     alert("Erro de conexão com o servidor.");
+  }
+}
+
+function redirecionarParaWelcome() {
+  const url = window.location.href;
+
+  if (url.includes("localhost")) {
+    window.location.href = "/welcome.html";
+  } else {
+    window.location.href =
+      "https://gabrielzubioli.github.io/login-screen-school-work/welcome";
   }
 }
 
