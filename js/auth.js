@@ -33,7 +33,7 @@ function login() {
         document.cookie = "token=" + json.token + "; path=/;";
         document.cookie = "dataExpiracao=" + json.dataExpiracao + "; path=/;";
         alert("Login realizado com sucesso!");
-        window.location.href = "home.html";
+        window.location.href = "welcome.html";
       } else {
         const text = await response.text();
         try {
