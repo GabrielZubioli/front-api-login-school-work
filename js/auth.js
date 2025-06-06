@@ -1,6 +1,4 @@
-const apiBaseUrl =
-  "https://umfgcloud-autenticacao-service-7e27ead80532.herokuapp.com/Autenticacao";
-
+const apiBaseUrl = "https://umfgcloud-autenticacao-service-7e27ead80532.herokuapp.com/Autenticacao";
 
 async function loginUsuario() {
   const email = document.getElementById("loginEmail").value.trim();
@@ -19,13 +17,18 @@ async function loginUsuario() {
       const data = await response.json();
       localStorage.setItem("email", email);
       localStorage.setItem("expiracao", data.dataExpiracao);
-      alert("Login successful!");
+      alert("Login realizado com sucesso!");
       redirecionarParaWelcome();
     } else {
-      const errorData = await response.json().catch(() => null);
-      const errorMessage =
-        errorData?.mensagem;
-      alert(`Erro: ${errorMessage}`);
+      const text = await response.text();
+      let message = text;
+
+      try {
+        const json = JSON.parse(text);
+        message = json?.mensagem || text;
+      } catch (e) {}
+
+      alert(`Erro: ${message}`);
     }
   } catch (error) {
     console.error(error);
@@ -36,9 +39,7 @@ async function loginUsuario() {
 async function cadastrarUsuario() {
   const email = document.getElementById("registerEmail").value.trim();
   const senha = document.getElementById("registerPassword").value.trim();
-  const senhaConfirmada = document
-    .getElementById("senhaConfirmada")
-    .value.trim();
+  const senhaConfirmada = document.getElementById("senhaConfirmada").value.trim();
 
   if (!email || !senha || !senhaConfirmada) {
     alert("Preencha todos os campos.");
@@ -51,9 +52,7 @@ async function cadastrarUsuario() {
   }
 
   if (!senhaEhForte(senha)) {
-    alert(
-      "A senha é fraca. Ela deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma minúscula e um número."
-    );
+    alert("A senha é fraca. Ela deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma minúscula e um número.");
     return;
   }
 
@@ -67,15 +66,18 @@ async function cadastrarUsuario() {
     });
 
     if (response.ok) {
-      const container = document.querySelector(".container");
       alert("Usuário cadastrado com sucesso!");
-
-      container.classList.remove("active");
+      document.querySelector(".container").classList.remove("active"); // Volta pra tela de login
     } else {
-      const errorData = await response.json().catch(() => null);
-      const errorMessage =
-        errorData?.mensagem;
-      alert(`Erro: ${errorMessage}`);
+      const text = await response.text();
+      let message = text;
+
+      try {
+        const json = JSON.parse(text);
+        message = json?.mensagem || text;
+      } catch (e) {}
+
+      alert(`Erro: ${message}`);
     }
   } catch (error) {
     console.error(error);
@@ -83,26 +85,18 @@ async function cadastrarUsuario() {
   }
 }
 
+function senhaEhForte(senha) {
+  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+  return regex.test(senha);
+}
+
 function redirecionarParaWelcome() {
   const url = window.location.href;
-
   if (url.includes("localhost")) {
     window.location.href = "/welcome.html";
   } else {
-    window.location.href =
-      "https://gabrielzubioli.github.io/login-screen-school-work/welcome";
+    window.location.href = "https://gabrielzubioli.github.io/login-screen-school-work/welcome";
   }
-}
-
-function formatarData(dataISO) {
-  const data = new Date(dataISO);
-  const dia = String(data.getDate()).padStart(2, "0");
-  const mes = String(data.getMonth() + 1).padStart(2, "0");
-  const ano = data.getFullYear();
-  const horas = String(data.getHours()).padStart(2, "0");
-  const minutos = String(data.getMinutes()).padStart(2, "0");
-
-  return `${dia}/${mes}/${ano} ${horas}:${minutos}`;
 }
 
 document.getElementById("loginForm").addEventListener("submit", (e) => {
