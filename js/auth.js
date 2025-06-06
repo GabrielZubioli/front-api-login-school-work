@@ -1,110 +1,106 @@
-const apiBaseUrl = "https://umfgcloud-autenticacao-service-7e27ead80532.herokuapp.com/Autenticacao";
-
-async function loginUsuario() {
-  const email = document.getElementById("loginEmail").value.trim();
-  const senha = document.getElementById("loginPassword").value.trim();
-
-  const body = { email, senha };
-
-  try {
-    const response = await fetch(apiBaseUrl + "/autenticar", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      localStorage.setItem("email", email);
-      localStorage.setItem("expiracao", data.dataExpiracao);
-      alert("Login realizado com sucesso!");
-      redirecionarParaWelcome();
-    } else {
-      const text = await response.text();
-      let message = text;
-
-      try {
-        const json = JSON.parse(text);
-        message = json?.mensagem || text;
-      } catch (e) {}
-
-      alert(`Erro: ${message}`);
-    }
-  } catch (error) {
-    console.error(error);
-    alert("Erro de conexão com o servidor.");
-  }
-}
-
-async function cadastrarUsuario() {
-  const email = document.getElementById("registerEmail").value.trim();
-  const senha = document.getElementById("registerPassword").value.trim();
-  const senhaConfirmada = document.getElementById("senhaConfirmada").value.trim();
-
-  if (!email || !senha || !senhaConfirmada) {
-    alert("Preencha todos os campos.");
-    return;
-  }
-
-  if (senha !== senhaConfirmada) {
-    alert("As senhas não coincidem.");
-    return;
-  }
-
-  if (!senhaEhForte(senha)) {
-    alert("A senha é fraca. Ela deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma minúscula e um número.");
-    return;
-  }
-
-  const body = { email, senha, senhaConfirmada };
-
-  try {
-    const response = await fetch(apiBaseUrl + "/registar", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-
-    if (response.ok) {
-      alert("Usuário cadastrado com sucesso!");
-      document.querySelector(".container").classList.remove("active"); // Volta pra tela de login
-    } else {
-      const text = await response.text();
-      let message = text;
-
-      try {
-        const json = JSON.parse(text);
-        message = json?.mensagem || text;
-      } catch (e) {}
-
-      alert(`Erro: ${message}`);
-    }
-  } catch (error) {
-    console.error(error);
-    alert("Erro de conexão com o servidor.");
-  }
-}
+var baseUrl = "https://umfgcloud-autenticacao-service-7e27ead80532.herokuapp.com";
 
 function senhaEhForte(senha) {
   const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
   return regex.test(senha);
 }
 
-function redirecionarParaWelcome() {
-  const url = window.location.href;
-  if (url.includes("localhost")) {
-    window.location.href = "/welcome.html";
-  } else {
-    window.location.href = "https://gabrielzubioli.github.io/login-screen-school-work/welcome";
+function login() {
+  var email = document.getElementById("emailLog").value.trim();
+  var password = document.getElementById("passwordLog").value.trim();
+
+  if (email === "" || password === "") {
+    alert("Preencha todos os campos.");
+    return;
   }
+
+  var data = {
+    email: email,
+    senha: password,
+  };
+
+  fetch(baseUrl + "/Autenticacao/autenticar", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+    .then(async (response) => {
+      if (response.ok) {
+        var json = await response.json();
+        document.cookie = "email=" + email + "; path=/;";
+        document.cookie = "token=" + json.token + "; path=/;";
+        document.cookie = "dataExpiracao=" + json.dataExpiracao + "; path=/;";
+        alert("Login realizado com sucesso!");
+        window.location.href = "home.html";
+      } else {
+        const text = await response.text();
+        try {
+          const json = JSON.parse(text);
+          alert("Erro: " + json.mensagem || text);
+        } catch {
+          alert("Erro: " + text);
+        }
+      }
+    })
+    .catch((error) => {
+      console.error("Erro:", error);
+      alert("Erro de conexão com o servidor.");
+    });
 }
 
-document.getElementById("loginForm").addEventListener("submit", (e) => {
-  e.preventDefault();
-  loginUsuario();
-});
+function register() {
+  var email = document.getElementById("email").value.trim();
+  var password = document.getElementById("password").value.trim();
+  var confirmPassword = document.getElementById("confirmPassword").value.trim();
 
-document.getElementById("registerForm").addEventListener("submit", (e) => {
-  e.preventDefault();
-  cadastrarUsuario();
-});
+  if (email === "" || password === "" || confirmPassword === "") {
+    alert("Preencha todos os campos.");
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    alert("As senhas não coincidem.");
+    return;
+  }
+
+  if (!senhaEhForte(password)) {
+    alert("A senha é fraca. Use pelo menos 8 caracteres, com uma letra maiúscula, uma minúscula e um número.");
+    return;
+  }
+
+  var data = {
+    email: email,
+    senha: password,
+    senhaConfirmada: confirmPassword,
+  };
+
+  fetch(baseUrl + "/Autenticacao/registar", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+    .then(async (response) => {
+      if (response.ok) {
+        alert("Usuário cadastrado com sucesso! Você já pode fazer login.");
+        // Remove a classe "active" para voltar à tela de login
+        const container = document.querySelector(".container");
+        if (container) container.classList.remove("active");
+      } else {
+        const text = await response.text();
+        try {
+          const json = JSON.parse(text);
+          alert("Erro: " + json.mensagem || text);
+        } catch {
+          alert("Erro: " + text);
+        }
+      }
+    })
+    .catch((error) => {
+      console.error("Erro:", error);
+      alert("Erro de conexão com o servidor.");
+    });
+}
