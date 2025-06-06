@@ -39,9 +39,7 @@ async function loginUsuario() {
 async function cadastrarUsuario() {
   const email = document.getElementById("registerEmail").value.trim();
   const senha = document.getElementById("registerPassword").value.trim();
-  const senhaConfirmada = document
-    .getElementById("senhaConfirmada")
-    .value.trim();
+  const senhaConfirmada = document.getElementById("senhaConfirmada").value.trim();
 
   if (!email || !senha || !senhaConfirmada) {
     alert("Preencha todos os campos.");
@@ -72,7 +70,6 @@ async function cadastrarUsuario() {
     if (response.ok) {
       const container = document.querySelector(".container");
       alert("Usuário cadastrado com sucesso!");
-
       container.classList.remove("active");
     } else {
       const errorData = await response.json().catch(() => null);
@@ -117,4 +114,16 @@ document.getElementById("loginForm").addEventListener("submit", (e) => {
 document.getElementById("registerForm").addEventListener("submit", (e) => {
   e.preventDefault();
   cadastrarUsuario();
+});
+
+const container = document.querySelector(".container");
+const registerBtn = document.querySelector(".register-btn");
+const loginBtn = document.querySelector(".login-btn");
+
+registerBtn.addEventListener("click", () => {
+  container.classList.add("active");
+});
+
+loginBtn.addEventListener("click", () => {
+  container.classList.remove("active");
 });
