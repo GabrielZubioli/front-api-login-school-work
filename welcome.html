@@ -14,6 +14,7 @@
     </div>
 
     <script>
+      const email = localStorage.getItem("email");
       const expiracaoISO = localStorage.getItem("expiracao");
 
       function formatarData(dataISO) {
@@ -27,25 +28,30 @@
         return `${dia}/${mes}/${ano} ${horas}:${minutos}`;
       }
 
-      document.getElementById(
-        "token-info"
-      ).innerText = `Seu token expira em ${formatarData(expiracaoISO)}`;
-
-      const email = localStorage.getItem("email");
-      if (!email || !expiracao) {
-        window.location.href = "/index.html";
+      function redirecionarParaLogin() {
+        const url = window.location.href;
+        if (url.includes("localhost")) {
+          window.location.href = "/index.html";
+        } else {
+          window.location.href =
+            "https://gabrielzubioli.github.io/login-screen-school-work/index.html";
+        }
       }
 
-      document.getElementById(
-        "welcome"
-      ).innerText = `Seja bem-vindo(a), ${email}!`;
-      document.getElementById(
-        "token-info"
-      ).innerText = `Seu token expira em ${formatarData(expiracaoISO)}`;
+      if (!email || !expiracaoISO) {
+        redirecionarParaLogin();
+      } else {
+        document.getElementById(
+          "welcome"
+        ).innerText = `Seja bem-vindo(a), ${email}!`;
+        document.getElementById(
+          "token-info"
+        ).innerText = `Seu token expira em ${formatarData(expiracaoISO)}`;
+      }
 
       function logout() {
         localStorage.clear();
-        window.location.href = "/index.html";
+        redirecionarParaLogin();
       }
     </script>
   </body>
