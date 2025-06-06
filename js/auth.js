@@ -2,19 +2,13 @@ const apiBaseUrl =
   "https://umfgcloud-autenticacao-service-7e27ead80532.herokuapp.com/Autenticacao";
 
 function senhaEhForte(senha) {
-  const regexSenhaForte =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+  const regexSenhaForte = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
   return regexSenhaForte.test(senha);
 }
 
 async function loginUsuario() {
   const email = document.getElementById("loginEmail").value.trim();
   const senha = document.getElementById("loginPassword").value.trim();
-
-  if (!email || !senha) {
-    alert("Preencha todos os campos.");
-    return;
-  }
 
   const body = { email, senha };
 
@@ -45,7 +39,9 @@ async function loginUsuario() {
 async function cadastrarUsuario() {
   const email = document.getElementById("registerEmail").value.trim();
   const senha = document.getElementById("registerPassword").value.trim();
-  const senhaConfirmada = document.getElementById("senhaConfirmada").value.trim();
+  const senhaConfirmada = document
+    .getElementById("senhaConfirmada")
+    .value.trim();
 
   if (!email || !senha || !senhaConfirmada) {
     alert("Preencha todos os campos.");
@@ -74,8 +70,10 @@ async function cadastrarUsuario() {
     });
 
     if (response.ok) {
+      const container = document.querySelector(".container");
       alert("Usuário cadastrado com sucesso!");
-      container.classList.remove('active');
+
+      container.classList.remove("active");
     } else {
       const errorData = await response.json().catch(() => null);
       const errorMessage =
