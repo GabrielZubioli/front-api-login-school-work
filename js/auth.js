@@ -1,106 +1,108 @@
-var baseUrl = "https://umfgcloud-autenticacao-service-7e27ead80532.herokuapp.com";
+ "https://umfgcloud-autenticacao-service-7e27ead80532.herokuapp.com/Autenticacao";
 
-function senhaEhForte(senha) {
-  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-  return regex.test(senha);
-}
 
-function login() {
-  var email = document.getElementById("emailLog").value.trim();
-  var password = document.getElementById("passwordLog").value.trim();
+async function loginUsuario() {
+  const email = document.getElementById("loginEmail").value.trim();
+  const senha = document.getElementById("loginPassword").value.trim();
 
-  if (email === "" || password === "") {
-    alert("Preencha todos os campos.");
-    return;
-  }
+  const body = { email, senha };
 
-  var data = {
-    email: email,
-    senha: password,
-  };
-
-  fetch(baseUrl + "/Autenticacao/autenticar", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  })
-    .then(async (response) => {
-      if (response.ok) {
-        var json = await response.json();
-        document.cookie = "email=" + email + "; path=/;";
-        document.cookie = "token=" + json.token + "; path=/;";
-        document.cookie = "dataExpiracao=" + json.dataExpiracao + "; path=/;";
-        alert("Login realizado com sucesso!");
-        window.location.href = "welcome.html";
-      } else {
-        const text = await response.text();
-        try {
-          const json = JSON.parse(text);
-          alert("Erro: " + json.mensagem || text);
-        } catch {
-          alert("Erro: " + text);
-        }
-      }
-    })
-    .catch((error) => {
-      console.error("Erro:", error);
-      alert("Erro de conexão com o servidor.");
+  try {
+    const response = await fetch(apiBaseUrl + "/autenticar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
     });
+
+    if (response.ok) {
+      const data = await response.json();
+      localStorage.setItem("email", email);
+      localStorage.setItem("expiracao", data.dataExpiracao);
+      alert("Login successful!");
+      redirecionarParaWelcome();
+    } else {
+      alert(await response.text());
+  } catch (error) {
+    console.error(error);
+    alert("Erro de conexão com o servidor.");
+  }
 }
 
-function register() {
-  var email = document.getElementById("email").value.trim();
-  var password = document.getElementById("password").value.trim();
-  var confirmPassword = document.getElementById("confirmPassword").value.trim();
+async function cadastrarUsuario() {
+  const email = document.getElementById("registerEmail").value.trim();
+  const senha = document.getElementById("registerPassword").value.trim();
+  const senhaConfirmada = document
+    .getElementById("senhaConfirmada")
+    .value.trim();
 
-  if (email === "" || password === "" || confirmPassword === "") {
+  if (!email || !senha || !senhaConfirmada) {
     alert("Preencha todos os campos.");
     return;
   }
 
-  if (password !== confirmPassword) {
+  if (senha !== senhaConfirmada) {
     alert("As senhas não coincidem.");
     return;
   }
 
-  if (!senhaEhForte(password)) {
-    alert("A senha é fraca. Use pelo menos 8 caracteres, com uma letra maiúscula, uma minúscula e um número.");
+  if (!senhaEhForte(senha)) {
+    alert(
+      "A senha é fraca. Ela deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma minúscula e um número."
+    );
     return;
   }
 
-  var data = {
-    email: email,
-    senha: password,
-    senhaConfirmada: confirmPassword,
-  };
+  const body = { email, senha, senhaConfirmada };
 
-  fetch(baseUrl + "/Autenticacao/registar", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  })
-    .then(async (response) => {
-      if (response.ok) {
-        alert("Usuário cadastrado com sucesso! Você já pode fazer login.");
-        // Remove a classe "active" para voltar à tela de login
-        const container = document.querySelector(".container");
-        if (container) container.classList.remove("active");
-      } else {
-        const text = await response.text();
-        try {
-          const json = JSON.parse(text);
-          alert("Erro: " + json.mensagem || text);
-        } catch {
-          alert("Erro: " + text);
-        }
-      }
-    })
-    .catch((error) => {
-      console.error("Erro:", error);
-      alert("Erro de conexão com o servidor.");
+  try {
+    const response = await fetch(apiBaseUrl + "/registar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
     });
+
+    if (response.ok) {
+      const container = document.querySelector(".container");
+      alert("Usuário cadastrado com sucesso!");
+
+      container.classList.remove("active");
+    } else {
+      alert(await response.text());
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Erro de conexão com o servidor.");
+  }
 }
+
+function redirecionarParaWelcome() {
+  const url = window.location.href;
+
+  if (url.includes("localhost")) {
+    window.location.href = "/welcome.html";
+  } else {
+    window.location.href =
+      "https://gabrielzubioli.github.io/login-screen-school-work/welcome";
+  }
+}
+
+function formatarData(dataISO) {
+  const data = new Date(dataISO);
+  const dia = String(data.getDate()).padStart(2, "0");
+  const mes = String(data.getMonth() + 1).padStart(2, "0");
+  const ano = data.getFullYear();
+  const horas = String(data.getHours()).padStart(2, "0");
+  const minutos = String(data.getMinutes()).padStart(2, "0");
+
+  return ${dia}/${mes}/${ano} ${horas}:${minutos};
+}
+
+document.getElementById("loginForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  loginUsuario();
+});
+
+document.getElementById("registerForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  cadastrarUsuario();
+});
