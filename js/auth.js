@@ -1,9 +1,9 @@
- "https://umfgcloud-autenticacao-service-7e27ead80532.herokuapp.com/Autenticacao";
-
+const apiBaseUrl =
+  "https://umfgcloud-autenticacao-service-7e27ead80532.herokuapp.com/Autenticacao";
 
 async function loginUsuario() {
-  const email = document.getElementById("loginEmail").value.trim();
-  const senha = document.getElementById("loginPassword").value.trim();
+  const email = document.getElementById("loginEmail").value;
+  const senha = document.getElementById("loginPassword").value;
 
   const body = { email, senha };
 
@@ -18,10 +18,11 @@ async function loginUsuario() {
       const data = await response.json();
       localStorage.setItem("email", email);
       localStorage.setItem("expiracao", data.dataExpiracao);
-      alert("Login successful!");
       redirecionarParaWelcome();
     } else {
-      alert(await response.text());
+      const errorMessage = await response.text();
+      alert(Erro: ${errorMessage});
+    }
   } catch (error) {
     console.error(error);
     alert("Erro de conexão com o servidor.");
@@ -29,28 +30,9 @@ async function loginUsuario() {
 }
 
 async function cadastrarUsuario() {
-  const email = document.getElementById("registerEmail").value.trim();
-  const senha = document.getElementById("registerPassword").value.trim();
-  const senhaConfirmada = document
-    .getElementById("senhaConfirmada")
-    .value.trim();
-
-  if (!email || !senha || !senhaConfirmada) {
-    alert("Preencha todos os campos.");
-    return;
-  }
-
-  if (senha !== senhaConfirmada) {
-    alert("As senhas não coincidem.");
-    return;
-  }
-
-  if (!senhaEhForte(senha)) {
-    alert(
-      "A senha é fraca. Ela deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma minúscula e um número."
-    );
-    return;
-  }
+  const email = document.getElementById("registerEmail").value;
+  const senha = document.getElementById("registerPassword").value;
+  const senhaConfirmada = document.getElementById("senhaConfirmada").value;
 
   const body = { email, senha, senhaConfirmada };
 
@@ -62,12 +44,12 @@ async function cadastrarUsuario() {
     });
 
     if (response.ok) {
-      const container = document.querySelector(".container");
       alert("Usuário cadastrado com sucesso!");
-
-      container.classList.remove("active");
+      document.querySelector(".register").classList.remove("active");
+      document.querySelector(".login").classList.add("active");
     } else {
-      alert(await response.text());
+      const errorMessage = await response.text();
+      alert(Erro: ${errorMessage});
     }
   } catch (error) {
     console.error(error);
@@ -96,6 +78,7 @@ function formatarData(dataISO) {
 
   return ${dia}/${mes}/${ano} ${horas}:${minutos};
 }
+  
 
 document.getElementById("loginForm").addEventListener("submit", (e) => {
   e.preventDefault();
