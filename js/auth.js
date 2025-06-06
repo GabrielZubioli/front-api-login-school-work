@@ -72,8 +72,6 @@ async function cadastrarUsuario() {
     if (response.ok) {
       const container = document.querySelector(".container");
       alert("Usuário cadastrado com sucesso!");
-
-      container.classList.remove("active");
     } else {
       const errorData = await response.json().catch(() => null);
       const errorMessage =
