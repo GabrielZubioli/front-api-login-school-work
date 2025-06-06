@@ -26,9 +26,13 @@ async function loginUsuario() {
       redirecionarParaWelcome();
     } else {
       const errorData = await response.json().catch(() => null);
-      const errorMessage =
-        errorData?.mensagem || "Erro ao realizar login. Verifique seus dados.";
-      alert(`Erro: ${errorMessage}`);
+      const errorMessage = errorData?.mensagem;
+
+      if (errorMessage) {
+        alert(`Erro: ${errorMessage}`);
+      } else {
+        alert("Erro inesperado ao realizar login.");
+      }
     }
   } catch (error) {
     console.error(error);
@@ -52,9 +56,7 @@ async function cadastrarUsuario() {
   }
 
   if (!senhaEhForte(senha)) {
-    alert(
-      "A senha é fraca. Ela deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma minúscula e um número."
-    );
+    alert("A senha é fraca. Deve ter ao menos 8 caracteres, 1 maiúscula, 1 minúscula e 1 número.");
     return;
   }
 
@@ -68,15 +70,17 @@ async function cadastrarUsuario() {
     });
 
     if (response.ok) {
-      const container = document.querySelector(".container");
       alert("Usuário cadastrado com sucesso!");
-      container.classList.remove("active");
+      document.querySelector(".container").classList.remove("active");
     } else {
       const errorData = await response.json().catch(() => null);
-      const errorMessage =
-        errorData?.mensagem ||
-        "Erro ao cadastrar. Verifique se o email já está cadastrado ou se os dados estão corretos.";
-      alert(`Erro: ${errorMessage}`);
+      const errorMessage = errorData?.mensagem;
+
+      if (errorMessage) {
+        alert(`Erro: ${errorMessage}`);
+      } else {
+        alert("Erro inesperado ao cadastrar usuário.");
+      }
     }
   } catch (error) {
     console.error(error);
