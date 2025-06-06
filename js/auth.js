@@ -1,9 +1,20 @@
 const apiBaseUrl =
   "https://umfgcloud-autenticacao-service-7e27ead80532.herokuapp.com/Autenticacao";
 
+function senhaEhForte(senha) {
+  const regexSenhaForte =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+  return regexSenhaForte.test(senha);
+}
+
 async function loginUsuario() {
-  const email = document.getElementById("loginEmail").value;
-  const senha = document.getElementById("loginPassword").value;
+  const email = document.getElementById("loginEmail").value.trim();
+  const senha = document.getElementById("loginPassword").value.trim();
+
+  if (!email || !senha) {
+    alert("Preencha todos os campos.");
+    return;
+  }
 
   const body = { email, senha };
 
@@ -32,9 +43,26 @@ async function loginUsuario() {
 }
 
 async function cadastrarUsuario() {
-  const email = document.getElementById("registerEmail").value;
-  const senha = document.getElementById("registerPassword").value;
-  const senhaConfirmada = document.getElementById("senhaConfirmada").value;
+  const email = document.getElementById("registerEmail").value.trim();
+  const senha = document.getElementById("registerPassword").value.trim();
+  const senhaConfirmada = document.getElementById("senhaConfirmada").value.trim();
+
+  if (!email || !senha || !senhaConfirmada) {
+    alert("Preencha todos os campos.");
+    return;
+  }
+
+  if (senha !== senhaConfirmada) {
+    alert("As senhas não coincidem.");
+    return;
+  }
+
+  if (!senhaEhForte(senha)) {
+    alert(
+      "A senha é fraca. Ela deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma minúscula e um número."
+    );
+    return;
+  }
 
   const body = { email, senha, senhaConfirmada };
 
@@ -47,12 +75,12 @@ async function cadastrarUsuario() {
 
     if (response.ok) {
       alert("Usuário cadastrado com sucesso!");
-      document.querySelector(".register").classList.remove("active");
-      document.querySelector(".login").classList.add("active");
+      container.classList.remove('active');
     } else {
       const errorData = await response.json().catch(() => null);
       const errorMessage =
-        errorData?.mensagem || "Erro ao cadastrar. Verifique os dados.";
+        errorData?.mensagem ||
+        "Erro ao cadastrar. Verifique se o email já está cadastrado ou se os dados estão corretos.";
       alert(`Erro: ${errorMessage}`);
     }
   } catch (error) {
