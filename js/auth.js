@@ -18,10 +18,6 @@ async function loginUsuario() {
       const data = await response.json();
       localStorage.setItem("email", email);
       localStorage.setItem("expiracao", data.dataExpiracao);
-      const dataFormatada = formatarData(data.dataExpiracao);
-      alert(
-        `Seja bem-vindo(a), ${email}! Seu token expira em ${dataFormatada}`
-      );
       redirecionarParaWelcome();
     } else {
       const errorMessage = await response.text();
