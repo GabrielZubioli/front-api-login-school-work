@@ -20,8 +20,10 @@ async function loginUsuario() {
       localStorage.setItem("expiracao", data.dataExpiracao);
       redirecionarParaWelcome();
     } else {
-      const errorMessage = await response.text();
-      alert(Erro: ${errorMessage});
+      const errorData = await response.json().catch(() => null);
+      const errorMessage =
+        errorData?.mensagem || "Erro ao realizar login. Verifique seus dados.";
+      alert(`Erro: ${errorMessage}`);
     }
   } catch (error) {
     console.error(error);
@@ -48,8 +50,10 @@ async function cadastrarUsuario() {
       document.querySelector(".register").classList.remove("active");
       document.querySelector(".login").classList.add("active");
     } else {
-      const errorMessage = await response.text();
-      alert(Erro: ${errorMessage});
+      const errorData = await response.json().catch(() => null);
+      const errorMessage =
+        errorData?.mensagem || "Erro ao cadastrar. Verifique os dados.";
+      alert(`Erro: ${errorMessage}`);
     }
   } catch (error) {
     console.error(error);
@@ -76,9 +80,8 @@ function formatarData(dataISO) {
   const horas = String(data.getHours()).padStart(2, "0");
   const minutos = String(data.getMinutes()).padStart(2, "0");
 
-  return ${dia}/${mes}/${ano} ${horas}:${minutos};
+  return `${dia}/${mes}/${ano} ${horas}:${minutos}`;
 }
-  
 
 document.getElementById("loginForm").addEventListener("submit", (e) => {
   e.preventDefault();
