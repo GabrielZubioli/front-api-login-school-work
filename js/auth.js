@@ -1,10 +1,6 @@
 const apiBaseUrl =
   "https://umfgcloud-autenticacao-service-7e27ead80532.herokuapp.com/Autenticacao";
 
-function senhaEhForte(senha) {
-  const regexSenhaForte = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-  return regexSenhaForte.test(senha);
-}
 
 async function loginUsuario() {
   const email = document.getElementById("loginEmail").value.trim();
@@ -23,11 +19,12 @@ async function loginUsuario() {
       const data = await response.json();
       localStorage.setItem("email", email);
       localStorage.setItem("expiracao", data.dataExpiracao);
+      alert("Login successful!");
       redirecionarParaWelcome();
     } else {
       const errorData = await response.json().catch(() => null);
       const errorMessage =
-        errorData?.mensagem || "Erro ao realizar login. Verifique seus dados.";
+        errorData?.mensagem;
       alert(`Erro: ${errorMessage}`);
     }
   } catch (error) {
@@ -72,11 +69,12 @@ async function cadastrarUsuario() {
     if (response.ok) {
       const container = document.querySelector(".container");
       alert("Usuário cadastrado com sucesso!");
+
+      container.classList.remove("active");
     } else {
       const errorData = await response.json().catch(() => null);
       const errorMessage =
-        errorData?.mensagem ||
-        "Erro ao cadastrar. Verifique se o email já está cadastrado ou se os dados estão corretos.";
+        errorData?.mensagem;
       alert(`Erro: ${errorMessage}`);
     }
   } catch (error) {
